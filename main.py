@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-FRAME_DELAY = 250
+FRAME_DELAY = 100
 
 
 
