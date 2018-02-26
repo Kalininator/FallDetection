@@ -1,13 +1,13 @@
 import cv2
 import numpy as np
-from Codebook import Codebook
+import Codebook as cb
 
 FRAME_DELAY = 1
 TRAINING_FRAMES = 80
 
 
 def main():
-    c = Codebook(320,240)
+    c = cb.Codebook(320,240,cb.CODEWORD_MINMAX)
     # c.addFrame(bg)
     cap = cv2.VideoCapture('walk.mp4')
     #loop through video
