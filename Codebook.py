@@ -8,7 +8,8 @@ class Codeword:
         self.max = None
 
     def addValue(self, val):
-        if self.min == None or self.max == None:
+        val = val[2]
+        if (self.min is None) or (self.max is None):
             self.min = val
             self.max = val
         else:
@@ -17,7 +18,11 @@ class Codeword:
             if val > self.max:
                 self.max = val
 
+
+
     def checkValue(self, val):
+        #extract channel
+        val = val[2]
         if val < self.min or val > self.max:
             return False
         else:
@@ -36,13 +41,13 @@ class Codebook:
         for x in range(self.width):
             for y in range(self.height):
                 # use hue
-                self.codes[x][y].addValue(frame[y][x][0])
+                self.codes[x][y].addValue(frame[y][x])
 
     def processFrame(self,frame):
         out = np.zeros((self.height,self.width),np.uint8) + 255
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         for x in range(self.width):
             for y in range(self.height):
-                if self.codes[x][y].checkValue(frame[y][x][0]):
+                if self.codes[x][y].checkValue(frame[y][x]):
                     out[y][x] = 0
         return out

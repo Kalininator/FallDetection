@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 from Codebook import Codebook
 
-FRAME_DELAY = 100
-
+FRAME_DELAY = 1
+TRAINING_FRAMES = 80
 
 
 def main():
@@ -16,15 +16,18 @@ def main():
     while True:
         ret, frame = cap.read()
         if ret == True:
-            if currentFrame < 50:#num frames to process
+            if currentFrame < TRAINING_FRAMES:#num frames to process
                 #used for initial training of codebook
                 c.addFrame(frame)
             else:
                 cb_out = c.processFrame(frame)
+                cb_out = cv2.medianBlur(cb_out,5)
                 cv2.imshow('fgmask',cb_out)
             currentFrame += 1
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+
+            if currentFrame >= TRAINING_FRAMES:
+                cv2.waitKey(FRAME_DELAY)
+
         else:
             break
     cap.release()
