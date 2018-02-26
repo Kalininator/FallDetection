@@ -11,7 +11,6 @@ class CodewordMinMax:
         self.max = None
 
     def addValue(self, val):
-        val = val[2]
         if (self.min is None) or (self.max is None):
             self.min = val
             self.max = val
@@ -22,8 +21,6 @@ class CodewordMinMax:
                 self.max = val
 
     def checkValue(self, val):
-        # extract channel
-        val = val[2]
         if val < self.min or val > self.max:
             return False
         else:
@@ -46,21 +43,19 @@ class Codebook(object):
     def __init__(self, width, height, type):
         self.width = width
         self.height = height
-        if type == CODEWORD_MINMAX:
+        self.type = type
+        if self.type == CODEWORD_MINMAX:
             self.codes = [[CodewordMinMax() for x in range(height)] for y in range(width)]
-        elif type == CODEWORD_VALUELIST:
+        elif self.type == CODEWORD_VALUELIST:
             self.codes = [[CodewordValueList() for x in range(height)] for y in range(width)]
 
     def addFrame(self, frame):
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         for x in range(self.width):
             for y in range(self.height):
-                # use hue
                 self.codes[x][y].addValue(frame[y][x])
 
     def processFrame(self, frame):
         out = np.zeros((self.height, self.width), np.uint8) + 255
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         for x in range(self.width):
             for y in range(self.height):
                 if self.codes[x][y].checkValue(frame[y][x]):
