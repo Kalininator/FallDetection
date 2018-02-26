@@ -1,8 +1,8 @@
 import numpy as np
-import cv2
 
 CODEWORD_MINMAX = 1
 CODEWORD_VALUELIST = 2
+CODEWORD_MULTIMINMAX = 3
 
 
 class CodewordMinMax:
@@ -26,6 +26,33 @@ class CodewordMinMax:
         else:
             return True
 
+class CodewordMultiMinMax:
+    def __init__(self):
+        self.pairs = []
+
+    def addValue(self,val):
+        added = False
+        for pair in self.pairs:
+            if pair[0] <= val <= pair[1]:
+                added = True
+                break
+        if not added:
+            #try extend an existing pair
+            for pair in self.pairs:
+                if pair[0] - 3 <= val <= pair[1] + 3:
+                    pair[0] = min(pair[0],val)
+                    pair[1] = max(pair[1],val)
+                    added = True
+                    break
+        if not added:
+            #make new pair
+            self.pairs.append([val,val])
+
+    def checkValue(self,val):
+        for pair in self.pairs:
+            if pair[0] <= val <= pair[1]:
+                return True
+        return False
 
 class CodewordValueList:
     def __init__(self):
@@ -48,6 +75,8 @@ class Codebook(object):
             self.codes = [[CodewordMinMax() for x in range(height)] for y in range(width)]
         elif self.type == CODEWORD_VALUELIST:
             self.codes = [[CodewordValueList() for x in range(height)] for y in range(width)]
+        elif self.type == CODEWORD_MULTIMINMAX:
+            self.codes = [[CodewordMultiMinMax() for x in range(height)] for y in range(width)]
 
     def addFrame(self, frame):
         for x in range(self.width):
