@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import Codebook as cb
+import matplotlib.pyplot as plt
 
 FRAME_DELAY = 1
 TRAINING_FRAMES = 50
@@ -9,10 +10,21 @@ def main():
     books = [cb.Codebook(320,240,cb.CODEWORD_MULTIMINMAX) for x in range(3)]
     cap = cv2.VideoCapture('walk.mp4')
     #loop through video
+    plots = [4,7,1]
+
+    fig = plt.gcf()
+    fig.show()
+    fig.canvas.draw()
+
     currentFrame = 0
     while True:
         ret, frame = cap.read()
         if ret == True:
+
+            plots.append(currentFrame % 3)
+            plt.plot(plots)
+            fig.canvas.draw()
+
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV)
             h,s,v = cv2.split(frame)
             channels = np.array([h,s,v])
@@ -29,6 +41,7 @@ def main():
                 # _,out = cv2.threshold(out,3*84,255,cv2.THRESH_BINARY)
                 # out = cv2.medianBlur(out,5)
                 cv2.imshow('fgmask',out)
+
 
             currentFrame += 1
 
