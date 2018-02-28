@@ -44,7 +44,7 @@ def largestBlobs(frame,blobCount,**options):
                 cnts.append(cnt)
         if len(cnts) > 0:
             cnts.sort(key=cv2.contourArea,reverse=True)
-            topx = cnts[:blobCount-1]
+            topx = cnts[:blobCount]
             ellipse = cv2.fitEllipse(np.concatenate(topx))
             return ellipse
     return None
@@ -52,7 +52,6 @@ def largestBlobs(frame,blobCount,**options):
 def blobByFScore(frame):
     #get all contours
     _, contours, _ = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
     #remove too small objects
     cnts = []
     for cnt in contours:
@@ -83,3 +82,19 @@ def blobByFScore(frame):
         print len(acceptedcontours)
         return cv2.fitEllipse(np.concatenate(acceptedcontours))
     return None
+
+def blobDetector(frame, **options):
+    params = cv2.SimpleBlobDetector_Params()
+    params.minArea = 1500
+    params.filterByArea = True
+    params.filterByInertia=False
+    params.filterByConvexity=False
+    params.filterByCircularity=False
+    ver = (cv2.__version__).split('.')
+    if int(ver[0]) < 3:
+        detector = cv2.SimpleBlobDetector(params)
+    else:
+        detector = cv2.SimpleBlobDetector_create(params)
+    keypoints = detector.detect(frame)
+    frame = cv2.drawKeypoints(frame, keypoints, np.array([]), 150, cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    return frame
